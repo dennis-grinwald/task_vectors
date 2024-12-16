@@ -13,7 +13,7 @@ class CIFAR10:
     def __init__(self, preprocess,
                  location=os.path.expanduser('~/data'),
                  batch_size=128,
-                 num_workers=16):
+                 num_workers=8):
 
 
         self.train_dataset = PyTorchCIFAR10(

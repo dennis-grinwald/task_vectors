@@ -7,7 +7,7 @@ class CIFAR100:
                  preprocess,
                  location=os.path.expanduser('~/data'),
                  batch_size=128,
-                 num_workers=16):
+                 num_workers=8):
 
         self.train_dataset = PyTorchCIFAR100(
             root=location, download=True, train=True, transform=preprocess

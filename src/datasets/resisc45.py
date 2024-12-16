@@ -282,8 +282,8 @@ class RESISC45:
     def __init__(self,
                  preprocess,
                  location=os.path.expanduser('~/data'),
-                 batch_size=32,
-                 num_workers=16):
+                 batch_size=16,
+                 num_workers=8):
 
         self.train_dataset = RESISC45Dataset(root=location, split='train', transforms=preprocess)
         self.train_loader = torch.utils.data.DataLoader(
