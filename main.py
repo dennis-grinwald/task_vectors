@@ -7,7 +7,7 @@ from src.args import parse_arguments
 datasets = ['MNIST', 'RESISC45']
 model = 'ViT-L-14'
 args = parse_arguments()
-args.data_location = 'path/to/data'
+args.data_location = 'data'
 args.model = model
 args.save = f'checkpoints/{model}'
 pretrained_checkpoint = f'checkpoints/{model}/zeroshot.pt'
