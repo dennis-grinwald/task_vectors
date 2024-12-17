@@ -16,7 +16,7 @@ pretrained_checkpoint = f'checkpoints/{model}/zeroshot.pt'
 # Create the task vectors
 task_vectors = [
     TaskVector(pretrained_checkpoint, f'checkpoints/{model}/{dataset}/finetuned.pt')
-    for i, dataset in enumerate(datasets)
+    for dataset in datasets
 ]
 
 # Test loop

@@ -66,9 +66,9 @@ def weighted_sum(task_vectors, alphas=None):
     """Add two task vectors together."""
     with torch.no_grad():
         new_vector = {}
-        for key in task_vectors[0]:
-            if key not in task_vectors[1]:
+        for key in task_vectors[0].vector:
+            if key not in task_vectors[1].vector:
                 print(f'Warning, key {key} is not present in both task vectors.')
                 continue
-            new_vector[key] = task_vectors[0][key] * alphas[0] + task_vectors[1][key] * alphas[1]
+            new_vector[key] = task_vectors[0].vector[key] * alphas[0] + task_vectors[1].vector[key] * alphas[1]
     return TaskVector(vector=new_vector)
