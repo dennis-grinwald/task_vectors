@@ -62,13 +62,13 @@ class TaskVector():
         return pretrained_model
 
 
-def weighted_sum(task_vector_1, task_vector_2, alphas=None):
+def weighted_sum(task_vectors, alphas=None):
     """Add two task vectors together."""
     with torch.no_grad():
         new_vector = {}
-        for key in task_vector_1:
-            if key not in task_vector_2:
+        for key in task_vectors[0]:
+            if key not in task_vectors[1]:
                 print(f'Warning, key {key} is not present in both task vectors.')
                 continue
-            new_vector[key] = task_vector_1[key] * alphas[0] + task_vector_2[key] * alphas[1]
+            new_vector[key] = task_vectors[0][key] * alphas[0] + task_vectors[1][key] * alphas[1]
     return TaskVector(vector=new_vector)
