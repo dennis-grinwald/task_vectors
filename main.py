@@ -20,7 +20,6 @@ task_vectors = [
 ]
 
 # Test loop
-
 for weight in np.arange(0,1.0,0.1):
     tmp_alphas = [weight, 1 - weight]
     print(f'Tmp. alphas: {tmp_alphas}')
