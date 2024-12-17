@@ -1,5 +1,6 @@
 import torch
-from src.task_vectors import TaskVector
+import numpy as np
+from src.task_vectors import TaskVector, weighted_sum
 from src.eval import eval_single_dataset
 from src.args import parse_arguments
 
@@ -15,13 +16,23 @@ pretrained_checkpoint = f'checkpoints/{model}/zeroshot.pt'
 # Create the task vectors
 task_vectors = [
     TaskVector(pretrained_checkpoint, f'checkpoints/{model}/{dataset}/finetuned.pt')
-    for dataset in datasets
+    for i, dataset in enumerate(datasets)
 ]
-# Sum the task vectors
-task_vector_sum = sum(task_vectors)
-# Apply the resulting task vector
-image_encoder = task_vector_sum.apply_to(pretrained_checkpoint, scaling_coef=0.8)
 
-# Evaluate
-for dataset in datasets:
-    eval_single_dataset(image_encoder, dataset, args)
+# Test loop
+
+for weight in np.arange(0,1.0,0.1):
+    tmp_alphas = [weight, 1 - weight]
+    print(f'Tmp. alphas: {tmp_alphas}')
+    merged_task_vector = weighted_sum(task_vectors, tmp_alphas)
+    # Apply the resulting task vector
+    image_encoder = merged_task_vector.apply_to(pretrained_checkpoint, scaling_coef=1.0)
+    # Evaluate
+    task_accuracies = []
+    for dataset in datasets:
+        task_accuracies.append(
+            eval_single_dataset(image_encoder, dataset, args)['top1']
+        )
+    for acc in task_accuracies:
+        print(f'Test accuracy: {acc:.2f}%')
+    print(f'Multitask accuracy: {np.mean(task_accuracies):.2f}% \n')

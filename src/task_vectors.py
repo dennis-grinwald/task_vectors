@@ -20,7 +20,7 @@ class TaskVector():
                 for key in pretrained_state_dict:
                     if pretrained_state_dict[key].dtype in [torch.int64, torch.uint8]:
                         continue
-                    self.vector[key] = finetuned_state_dict[key] - pretrained_state_dict[key]
+                    self.vector[key] = (finetuned_state_dict[key] - pretrained_state_dict[key])
     
     def __add__(self, other):
         """Add two task vectors together."""
@@ -32,6 +32,7 @@ class TaskVector():
                     continue
                 new_vector[key] = self.vector[key] + other.vector[key]
         return TaskVector(vector=new_vector)
+    
 
     def __radd__(self, other):
         if other is None or isinstance(other, int):
@@ -60,3 +61,14 @@ class TaskVector():
         pretrained_model.load_state_dict(new_state_dict, strict=False)
         return pretrained_model
 
+
+def weighted_sum(task_vector_1, task_vector_2, alphas=None):
+    """Add two task vectors together."""
+    with torch.no_grad():
+        new_vector = {}
+        for key in task_vector_1:
+            if key not in task_vector_2:
+                print(f'Warning, key {key} is not present in both task vectors.')
+                continue
+            new_vector[key] = task_vector_1[key] * alphas[0] + task_vector_2[key] * alphas[1]
+    return TaskVector(vector=new_vector)

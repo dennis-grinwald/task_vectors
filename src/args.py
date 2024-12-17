@@ -98,6 +98,13 @@ def parse_arguments():
         default='/gscratch/efml/gamaga/.cache/open_clip',
         help='Directory for caching models from OpenCLIP'
     )
+    parser.add_argument(
+        "--alphas",
+        type=float,
+        nargs="+",
+        required=True,
+        help="Coefficients that we will use for convex combination of finetuned models (e.g., 1.2 3.4 5.6)."
+    )
     parsed_args = parser.parse_args()
     parsed_args.device = "cuda" if torch.cuda.is_available() else "cpu"
     
