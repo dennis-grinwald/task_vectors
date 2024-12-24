@@ -19,7 +19,7 @@ task_vectors = [
 ]
 
 # Test loop
-for weight in np.arange(0,1.0,0.1):
+for weight in np.arange(0,1.1,0.1):
     tmp_alphas = [weight, 1 - weight]
     print(f'Tmp. alphas: {tmp_alphas}')
     merged_task_vector = weighted_sum(task_vectors, tmp_alphas)
