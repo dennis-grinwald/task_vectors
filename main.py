@@ -1,11 +1,10 @@
-import torch
 import numpy as np
 from src.task_vectors import TaskVector, weighted_sum
 from src.eval import eval_single_dataset
 from src.args import parse_arguments
 
 # Config
-datasets = ['MNIST', 'RESISC45']
+datasets = ['SVHN', 'RESISC45']
 model = 'ViT-L-14'
 args = parse_arguments()
 args.data_location = 'data'
@@ -32,6 +31,6 @@ for weight in np.arange(0,1.0,0.1):
         task_accuracies.append(
             eval_single_dataset(image_encoder, dataset, args)['top1']
         )
-    for acc in task_accuracies:
-        print(f'Test accuracy: {acc:.2f}%')
-    print(f'Multitask accuracy: {np.mean(task_accuracies):.2f}% \n')
+    for i, acc in enumerate(task_accuracies):
+        print(f'Test accuracy task {datasets[i]}: {acc:.4f}%')
+    print(f'Multitask accuracy: {np.mean(task_accuracies):.4f}% \n')
