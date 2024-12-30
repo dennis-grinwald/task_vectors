@@ -19,9 +19,9 @@ task_vectors = [
 ]
 
 # Test loop
-for weight in np.arange(0,1.1,0.1):
+task_accs = {}
+for i, weight in enumerate(np.arange(-1.1,1.1,0.1)):
     tmp_alphas = [weight, 1 - weight]
-    print(f'Tmp. alphas: {tmp_alphas}')
     merged_task_vector = weighted_sum(task_vectors, tmp_alphas)
     # Apply the resulting task vector
     image_encoder = merged_task_vector.apply_to(pretrained_checkpoint, scaling_coef=1.0)
@@ -31,6 +31,6 @@ for weight in np.arange(0,1.1,0.1):
         task_accuracies.append(
             eval_single_dataset(image_encoder, dataset, args)['top1']
         )
-    for i, acc in enumerate(task_accuracies):
-        print(f'Test accuracy task {datasets[i]}: {acc:.4f}%')
-    print(f'Multitask accuracy: {np.mean(task_accuracies):.4f}% \n')
+    task_accuracies.append(np.mean(task_accuracies))
+    task_accs[str(weight)] = task_accuracies
+np.save('task_accs.npy', task_accs)
