@@ -4,7 +4,7 @@ from src.eval import eval_single_dataset
 from src.args import parse_arguments
 
 # Config
-datasets = ['SVHN', 'RESISC45']
+datasets = ['EuroSAT', 'RESISC45']
 model = 'ViT-L-14'
 args = parse_arguments()
 args.data_location = 'data'
@@ -20,7 +20,7 @@ task_vectors = [
 
 # Test loop
 task_accs = {}
-for i, weight in enumerate(np.arange(-1.1,1.1,0.1)):
+for i, weight in enumerate(np.arange(0.0,1.1,0.1)):
     tmp_alphas = [weight, 1 - weight]
     merged_task_vector = weighted_sum(task_vectors, tmp_alphas)
     # Apply the resulting task vector
