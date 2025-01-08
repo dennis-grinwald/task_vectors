@@ -29,6 +29,9 @@ for i, weight in enumerate(np.arange(0.0,1.1,0.1)):
     merged_task_vector.vector['model.visual.transformer.resblocks.1.mlp.c_proj.weight'] = alpha_vector.vector['model.visual.transformer.resblocks.1.mlp.c_proj.weight']
     merged_task_vector.vector['model.visual.transformer.resblocks.1.mlp.c_proj.bias'] = alpha_vector.vector['model.visual.transformer.resblocks.1.mlp.c_proj.bias']
 
+    merged_task_vector.vector['model.visual.transformer.resblocks.15.mlp.c_proj.weight'] = alpha_vector.vector['model.visual.transformer.resblocks.15.mlp.c_proj.weight']
+    merged_task_vector.vector['model.visual.transformer.resblocks.15.mlp.c_proj.bias'] = alpha_vector.vector['model.visual.transformer.resblocks.15.mlp.c_proj.bias']
+
     # Apply the resulting task vector
     image_encoder = merged_task_vector.apply_to(pretrained_checkpoint, scaling_coef=1.0)
     # Evaluate
