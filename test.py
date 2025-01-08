@@ -5,7 +5,7 @@ from src.eval import eval_single_dataset
 from src.args import parse_arguments
 
 # Config
-datasets = ['SVHN', 'MNIST']
+datasets = ['MNIST', 'RESISC45']
 model = 'ViT-L-14'
 args = parse_arguments()
 args.data_location = 'data'
@@ -25,8 +25,10 @@ for i, weight in enumerate(np.arange(0.0,1.1,0.1)):
     merged_task_vector = copy.deepcopy(weighted_sum(task_vectors, [0.5, 0.5]))
     tmp_alphas = [weight, 1 - weight]
     merged_task_vector_alpha = weighted_sum(task_vectors, tmp_alphas)
-    merged_task_vector.vector['model.ln_final.weight'] = merged_task_vector_alpha.vector['model.ln_final.weight']
-    merged_task_vector.vector['model.ln_final.bias'] = merged_task_vector_alpha.vector['model.ln_final.bias']
+
+    # Exchange weights of the last linear layer
+    merged_task_vector.vector['model.visual.transformer.resblocks.23.mlp.c_proj.weight'] = merged_task_vector_alpha.vector['model.visual.transformer.resblocks.23.mlp.c_proj.weight']
+    merged_task_vector.vector['model.visual.transformer.resblocks.23.mlp.c_proj.bias'] = merged_task_vector_alpha.vector['model.visual.transformer.resblocks.23.mlp.c_proj.bias']
     # Apply the resulting task vector
     image_encoder = merged_task_vector.apply_to(pretrained_checkpoint, scaling_coef=1.0)
     # Evaluate

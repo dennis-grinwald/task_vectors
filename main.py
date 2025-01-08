@@ -4,12 +4,13 @@ from src.eval import eval_single_dataset
 from src.args import parse_arguments
 
 # Config
-datasets = ['SVHN', 'RESISC45']
+datasets = ['RESISC45', 'SVHN']
 model = 'ViT-L-14'
 args = parse_arguments()
 args.data_location = 'data'
 args.model = model
 args.save = f'checkpoints/{model}'
+args.openclip_cachedir = f'./'
 pretrained_checkpoint = f'checkpoints/{model}/zeroshot.pt'
 
 # Create the task vectors
@@ -28,6 +29,7 @@ for i, weight in enumerate(np.arange(0.0,1.1,0.1)):
     # Evaluate
     task_accuracies = []
     for dataset in datasets:
+        eval_single_dataset(image_encoder, dataset, args)['top1']
         task_accuracies.append(
             eval_single_dataset(image_encoder, dataset, args)['top1']
         )
