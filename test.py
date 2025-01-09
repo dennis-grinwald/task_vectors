@@ -22,12 +22,12 @@ task_vectors = [
 # Test loop
 task_accs = {}
 for i, weight in enumerate(np.arange(0.0,1.1,0.1)):
-    merged_task_vector = weighted_sum(task_vectors, [0.5, 0.5])
+    # merged_task_vector = weighted_sum(task_vectors, [0.5, 0.5])
     tmp_alphas = [weight, 1 - weight]
-    alpha_vector = weighted_sum(task_vectors, tmp_alphas)
+    merged_task_vector = weighted_sum(task_vectors, tmp_alphas)
     # Exchange weights of the last linear layer
-    merged_task_vector.vector['model.visual.transformer.resblocks.23.mlp.c_proj.weight'] = alpha_vector.vector['model.visual.transformer.resblocks.23.mlp.c_proj.weight']
-    merged_task_vector.vector['model.visual.transformer.resblocks.23.mlp.c_proj.bias'] = alpha_vector.vector['model.visual.transformer.resblocks.23.mlp.c_proj.bias']
+    # merged_task_vector.vector['model.visual.transformer.resblocks.23.mlp.c_proj.weight'] = alpha_vector.vector['model.visual.transformer.resblocks.23.mlp.c_proj.weight']
+    # merged_task_vector.vector['model.visual.transformer.resblocks.23.mlp.c_proj.bias'] = alpha_vector.vector['model.visual.transformer.resblocks.23.mlp.c_proj.bias']
 
     # Apply the resulting task vector
     image_encoder = merged_task_vector.apply_to(pretrained_checkpoint, scaling_coef=1.0)
@@ -39,4 +39,4 @@ for i, weight in enumerate(np.arange(0.0,1.1,0.1)):
         )
     task_accuracies.append(np.mean(task_accuracies))
     task_accs[str(weight)] = task_accuracies
-np.save('only_last_class_layer_task_accs.npy', task_accs)
+np.save('task_accs.npy', task_accs)
