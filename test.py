@@ -5,7 +5,7 @@ from src.eval import eval_single_dataset
 from src.args import parse_arguments
 
 # Config
-datasets = ['MNIST', 'RESISC45']
+datasets = ['SVHN', 'RESISC45']
 model = 'ViT-L-14'
 args = parse_arguments()
 args.data_location = 'data'
