@@ -20,23 +20,24 @@ task_vectors = [
 ]
 
 # Test loop
-task_accs = {}
-for i, weight in enumerate(np.arange(0.0,1.1,0.1)):
-    merged_task_vector = weighted_sum(task_vectors, [0.5, 0.5])
-    tmp_alphas = [weight, 1 - weight]
-    alpha_vector = weighted_sum(task_vectors, tmp_alphas)
-    # Exchange weights of the last linear layer
-    merged_task_vector.vector['model.visual.transformer.resblocks.23.mlp.c_proj.weight'] = alpha_vector.vector['model.visual.transformer.resblocks.23.mlp.c_proj.weight']
-    merged_task_vector.vector['model.visual.transformer.resblocks.23.mlp.c_proj.bias'] = alpha_vector.vector['model.visual.transformer.resblocks.23.mlp.c_proj.bias']
+for j in range(0,12,1):
+    task_accs = {}
+    for i, weight in enumerate(np.arange(0.0,1.1,0.1)):
+        merged_task_vector = weighted_sum(task_vectors, [0.5, 0.5])
+        tmp_alphas = [weight, 1 - weight]
+        alpha_vector = weighted_sum(task_vectors, tmp_alphas)
+        # Exchange weights of the last linear layer
+        merged_task_vector.vector[f'model.visual.transformer.resblocks.{j}.mlp.c_proj.weight'] = alpha_vector.vector[f'model.visual.transformer.resblocks.{j}.mlp.c_proj.weight']
+        merged_task_vector.vector[f'model.visual.transformer.resblocks.{j}.mlp.c_proj.bias'] = alpha_vector.vector[f'model.visual.transformer.resblocks.{j}.mlp.c_proj.bias']
 
-    # Apply the resulting task vector
-    image_encoder = merged_task_vector.apply_to(pretrained_checkpoint, scaling_coef=1.0)
-    # Evaluate
-    task_accuracies = []
-    for dataset in datasets:
-        task_accuracies.append(
-            eval_single_dataset(image_encoder, dataset, args)['top1']
-        )
-    task_accuracies.append(np.mean(task_accuracies))
-    task_accs[str(weight)] = task_accuracies
-np.save('only_last_class_layer_task_accs.npy', task_accs)
+        # Apply the resulting task vector
+        image_encoder = merged_task_vector.apply_to(pretrained_checkpoint, scaling_coef=1.0)
+        # Evaluate
+        task_accuracies = []
+        for dataset in datasets:
+            task_accuracies.append(
+                eval_single_dataset(image_encoder, dataset, args)['top1']
+            )
+        task_accuracies.append(np.mean(task_accuracies))
+        task_accs[str(weight)] = task_accuracies
+    np.save(f'accs_simplex_in_layer_{j}.npy', task_accs)
