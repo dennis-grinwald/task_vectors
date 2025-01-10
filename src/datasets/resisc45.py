@@ -294,6 +294,15 @@ class RESISC45:
         )
 
         self.test_dataset = RESISC45Dataset(root=location, split='test', transforms=preprocess)
+
+        SPLIT = True
+        if SPLIT:
+            test_subset_ids = np.random.choice(len(self.test_dataset), 2000, replace=False).flatten()
+            self.test_dataset  = torch.utils.data.Subset(
+                self.test_dataset,
+                indices=test_subset_ids
+            )
+
         self.test_loader = torch.utils.data.DataLoader(
             self.test_dataset,
             batch_size=batch_size,

@@ -16,17 +16,18 @@ from src.datasets.registry import get_dataset
 def eval_single_dataset(image_encoder, dataset_name, args):
     classification_head = get_classification_head(args, dataset_name)
     model = ImageClassifier(image_encoder, classification_head)
-
     model.eval()
-
+    
     dataset = get_dataset(
         dataset_name,
         model.val_preprocess,
         location=args.data_location,
-        batch_size=args.batch_size
+        batch_size=args.batch_size,
     )
+
     dataloader = get_dataloader(
         dataset, is_train=False, args=args, image_encoder=None)
+
     device = args.device
 
     with torch.no_grad():
