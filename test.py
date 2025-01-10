@@ -18,7 +18,7 @@ task_vectors = [
     TaskVector(pretrained_checkpoint, f'checkpoints/{model}/{dataset}/finetuned.pt')
     for dataset in datasets
 ]
-for j in [list(range(23)),[1],[2],[3],[1,2,3],[21],[22],[23],[21,22,23]]:
+for j in [[1,2], [11,12,13], [17,18,19], [22,23]]:
     task_accs = {}
     for i, weight in enumerate(np.arange(0.0,1.1,0.1)):
         merged_task_vector = weighted_sum(task_vectors, [0.5, 0.5])
