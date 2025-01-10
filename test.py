@@ -20,7 +20,7 @@ task_vectors = [
 ]
 
 # Test loop
-for j in range(16,20,1):
+for j in [23,3,4,5]:
     task_accs = {}
     for i, weight in enumerate(np.arange(0.0,1.1,0.1)):
         merged_task_vector = weighted_sum(task_vectors, [0.5, 0.5])
