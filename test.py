@@ -18,27 +18,23 @@ task_vectors = [
     TaskVector(pretrained_checkpoint, f'checkpoints/{model}/{dataset}/finetuned.pt')
     for dataset in datasets
 ]
-for j in [[0,23], [0,1,2], [0], [0,1], [0,1,22,23]]:
-    task_accs = {}
-    for i, weight in enumerate(np.arange(0.0,1.1,0.1)):
-        merged_task_vector = weighted_sum(task_vectors, [0.5, 0.5])
-        tmp_alphas = [weight, 1 - weight]
-        alpha_vector = weighted_sum(task_vectors, tmp_alphas)
-        for l in j:
-            # Exchange weights of the last linear layer
-            merged_task_vector.vector[f'model.visual.transformer.resblocks.{l}.mlp.c_proj.weight'] = alpha_vector.vector[f'model.visual.transformer.resblocks.{l}.mlp.c_proj.weight']
-            merged_task_vector.vector[f'model.visual.transformer.resblocks.{l}.mlp.c_proj.bias'] = alpha_vector.vector[f'model.visual.transformer.resblocks.{l}.mlp.c_proj.bias']
-        # Apply the resulting task vector
-        image_encoder = merged_task_vector.apply_to(pretrained_checkpoint, scaling_coef=1.0)
-        # Evaluate
-        task_accuracies = []
-        for dataset in datasets:
-            task_accuracies.append(
-                eval_single_dataset(image_encoder, dataset, args)['top1']
-            )
-        task_accuracies.append(np.mean(task_accuracies))
-        task_accs[str(weight)] = task_accuracies
-    if j == list(range(23)):
-        np.save(f'results/accs_simplex_in_layers_all.npy', task_accs)
-    else: 
-        np.save(f'results/accs_simplex_in_layers_{"_".join(map(str, j))}.npy', task_accs)
+task_accs = {}
+for i, weight in enumerate(np.arange(0.0,1.1,0.1)):
+    merged_task_vector = weighted_sum(task_vectors, [0.5, 0.5])
+    tmp_alphas = [weight, 1 - weight]
+    alpha_vector = weighted_sum(task_vectors, tmp_alphas)
+    # Exchange weights of the last linear layer
+    merged_task_vector.vector[f'model.visual.proj'] = alpha_vector.vector[f'model.visual.proj']
+    # merged_task_vector.vector[f'model.visual.transformer.resblocks.{l}.mlp.c_proj.weight'] = alpha_vector.vector[f'model.visual.transformer.resblocks.{l}.mlp.c_proj.weight']
+    # merged_task_vector.vector[f'model.visual.transformer.resblocks.{l}.mlp.c_proj.bias'] = alpha_vector.vector[f'model.visual.transformer.resblocks.{l}.mlp.c_proj.bias']
+    # Apply the resulting task vector
+    image_encoder = merged_task_vector.apply_to(pretrained_checkpoint, scaling_coef=1.0)
+    # Evaluate
+    task_accuracies = []
+    for dataset in datasets:
+        task_accuracies.append(
+            eval_single_dataset(image_encoder, dataset, args)['top1']
+        )
+    task_accuracies.append(np.mean(task_accuracies))
+    task_accs[str(weight)] = task_accuracies
+np.save(f'results/accs_simplex_in_proj_layer.npy', task_accs)

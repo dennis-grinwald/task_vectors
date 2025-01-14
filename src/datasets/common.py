@@ -63,18 +63,23 @@ def maybe_dictionarize(batch):
 
 def get_features_helper(image_encoder, dataloader, device):
     all_data = collections.defaultdict(list)
-
     image_encoder = image_encoder.to(device)
-    image_encoder = torch.nn.DataParallel(image_encoder, device_ids=[x for x in range(torch.cuda.device_count())])
+    # Attach hooks to specific layers
+    intermediate_activations = []
+    def hook_fn(module, input, output):
+        intermediate_activations.append(output.to('cpu').numpy())
+    for name, module in image_encoder.named_modules():
+        if name == 'model.visual.ln_post':        
+            module.register_forward_hook(hook_fn)
+    # image_encoder = torch.nn.DataParallel(image_encoder, device_ids=[x for x in range(torch.cuda.device_count())])
     image_encoder.eval()
-
     with torch.no_grad():
-        for batch in tqdm(dataloader):
+        for i, batch in enumerate(tqdm(dataloader)):
             batch = maybe_dictionarize(batch)
             features = image_encoder(batch['images'].cuda())
-
+            # features = image_encoder(batch['images'].to(torch.device('mps')))
+            # print(f'image_encoder.model.visual.ln_post.activations.shape: {np.array(intermediate_activations).shape}')
             all_data['features'].append(features.cpu())
-
             for key, val in batch.items():
                 if key == 'images':
                     continue
@@ -113,7 +118,7 @@ def get_features(is_train, image_encoder, dataset, device):
             os.makedirs(cache_dir, exist_ok=True)
             print(f'Caching data at {cache_dir}')
             for name, val in data.items():
-                torch.save(val, f'{cache_dir}/{name}.pt')
+                torch.save(val, f'{cache_dir}/{name}.pt') 
     return data
 
 
